@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Suivi colis premium</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <main class="container">
+    <header class="hero card">
+      <p class="eyebrow">Suivi expédition</p>
+      <h1>Une interface moderne pour votre suivi de colis</h1>
+      <p class="subtitle">Entrez votre numéro de suivi. Nous récupérons les données du site d’origine et les affichons de façon claire.</p>
+
+      <form id="track-form" class="search-row" autocomplete="off">
+        <label for="tracking-input" class="sr-only">Numéro de suivi</label>
+        <input id="tracking-input" name="trackingNumber" type="text" placeholder="Ex. AB123456789CN" required />
+        <button type="submit">Rechercher</button>
+      </form>
+    </header>
+
+    <section id="feedback" class="feedback"></section>
+    <section id="results" class="results"></section>
+  </main>
+
+  <template id="empty-state-template">
+    <div class="card state-card">
+      <h2>Prêt à suivre votre colis</h2>
+      <p>Saisissez un numéro pour afficher le statut, la destination et l’historique.</p>
+    </div>
+  </template>
+
+  <script src="/app.js" defer></script>
+</body>
+</html>
