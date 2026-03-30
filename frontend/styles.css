@@ -1,0 +1,223 @@
+:root {
+  --bg: #f5f6f8;
+  --card: #ffffff;
+  --text: #111827;
+  --muted: #6b7280;
+  --primary: #111111;
+  --line: #e5e7eb;
+  --accent: #0a84ff;
+  --success: #0a7a38;
+  --danger: #b42318;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background: radial-gradient(circle at top, #ffffff 0%, var(--bg) 65%);
+  color: var(--text);
+}
+
+.container {
+  width: min(1050px, 92vw);
+  margin: 0 auto;
+  padding: 3rem 0 4rem;
+}
+
+.card {
+  background: var(--card);
+  border-radius: 24px;
+  box-shadow: 0 14px 40px rgba(16, 24, 40, 0.06);
+  border: 1px solid rgba(17, 24, 39, 0.04);
+}
+
+.hero {
+  padding: 2.4rem;
+}
+
+.eyebrow {
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  font-size: .74rem;
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.hero h1 {
+  margin: .55rem 0 .8rem;
+  font-size: clamp(1.7rem, 3vw, 2.5rem);
+  line-height: 1.1;
+}
+
+.subtitle {
+  margin: 0;
+  color: var(--muted);
+  max-width: 70ch;
+}
+
+.search-row {
+  margin-top: 1.4rem;
+  display: flex;
+  gap: .75rem;
+}
+
+.search-row input {
+  flex: 1;
+  height: 54px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 0 1rem;
+  font-size: 1rem;
+  outline: none;
+  transition: border-color .2s ease, box-shadow .2s ease;
+}
+
+.search-row input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 4px rgba(10, 132, 255, .12);
+}
+
+.search-row button {
+  min-width: 150px;
+  height: 54px;
+  border: none;
+  border-radius: 14px;
+  background: var(--primary);
+  color: #fff;
+  font-size: .95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform .15s ease, opacity .15s ease;
+}
+
+.search-row button:hover { transform: translateY(-1px); }
+.search-row button:disabled { opacity: .55; cursor: wait; }
+
+.feedback {
+  margin-top: 1rem;
+  min-height: 24px;
+  color: var(--muted);
+}
+
+.feedback.error { color: var(--danger); }
+.feedback.success { color: var(--success); }
+
+.results {
+  margin-top: 1rem;
+  display: grid;
+  gap: 1rem;
+}
+
+.state-card,
+.shipment-card {
+  padding: 1.4rem;
+}
+
+.kv-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: .75rem;
+}
+
+.kv {
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: .75rem;
+}
+
+.kv .label { color: var(--muted); font-size: .84rem; }
+.kv .value { margin-top: .25rem; font-weight: 600; word-break: break-word; }
+
+.section-title { margin: 0 0 .8rem; font-size: 1.1rem; }
+
+.timeline {
+  margin-top: 1rem;
+  border-left: 2px solid var(--line);
+  padding-left: 1rem;
+  display: grid;
+  gap: .8rem;
+}
+
+.timeline-item {
+  position: relative;
+  background: #fafafa;
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  padding: .7rem .8rem;
+}
+
+.timeline-item::before {
+  content: '';
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--accent);
+  position: absolute;
+  left: -1.35rem;
+  top: .85rem;
+}
+
+.meta {
+  margin: 0;
+  color: var(--muted);
+  font-size: .84rem;
+}
+
+.attachments {
+  margin-top: 1rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: .55rem;
+}
+
+.attachments a {
+  text-decoration: none;
+  color: #0b5ccd;
+  border: 1px solid #dbeafe;
+  background: #eff6ff;
+  border-radius: 999px;
+  padding: .35rem .7rem;
+  font-size: .82rem;
+}
+
+.loader {
+  display: inline-flex;
+  align-items: center;
+  gap: .55rem;
+}
+
+.loader-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--accent);
+  animation: pulse 1s infinite ease-in-out;
+}
+.loader-dot:nth-child(2) { animation-delay: .18s; }
+.loader-dot:nth-child(3) { animation-delay: .35s; }
+
+@keyframes pulse {
+  0%, 100% { transform: scale(.8); opacity: .4; }
+  50% { transform: scale(1.15); opacity: 1; }
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0,0,0,0);
+  border: 0;
+}
+
+@media (max-width: 760px) {
+  .container { padding-top: 1.2rem; }
+  .hero { padding: 1.2rem; }
+  .search-row { flex-direction: column; }
+  .search-row button { width: 100%; }
+  .kv-grid { grid-template-columns: 1fr; }
+}
