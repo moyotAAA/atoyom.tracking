@@ -69,7 +69,8 @@ Le backend:
 1. poste `documentCode` au site legacy,
 2. récupère le HTML,
 3. parse les sections/détails/historique/pièces jointes,
-4. renvoie une réponse JSON exploitable par le frontend.
+4. trie l'historique du plus récent au plus ancien (update la plus récente en haut),
+5. renvoie une réponse JSON exploitable par le frontend.
 
 ## Remarques
 

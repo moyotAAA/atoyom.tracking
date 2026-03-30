@@ -14,12 +14,33 @@ const LABEL_TRANSLATIONS = {
   '请输入您的追踪号码': 'Saisissez votre numéro de suivi'
 };
 
+const DATE_REGEX = /(\d{2,4}[\/.\-]\d{1,2}[\/.\-]\d{1,2}(?:\s+\d{1,2}:\d{2}(?::\d{2})?)?)/;
+
 function cleanText(value = '') {
   return value.replace(/\s+/g, ' ').trim();
 }
 
 function translateLabel(label) {
   return LABEL_TRANSLATIONS[cleanText(label)] || cleanText(label);
+}
+
+function parseDateCandidate(raw) {
+  const value = cleanText(raw).replace(/\./g, '-').replace(/\//g, '-');
+  const match = value.match(/(\d{2,4})-(\d{1,2})-(\d{1,2})(?:\s+(\d{1,2}):(\d{2})(?::(\d{2}))?)?/);
+  if (!match) return null;
+
+  let year = Number(match[1]);
+  if (year < 100) year += 2000;
+
+  const month = Number(match[2]);
+  const day = Number(match[3]);
+  const hour = Number(match[4] || '0');
+  const minute = Number(match[5] || '0');
+  const second = Number(match[6] || '0');
+
+  const date = new Date(Date.UTC(year, month - 1, day, hour, minute, second));
+  if (Number.isNaN(date.getTime())) return null;
+  return date;
 }
 
 function parseAttachments($, scope) {
@@ -41,6 +62,25 @@ function parseAttachments($, scope) {
   return Array.from(new Set(attachments));
 }
 
+function toEvent(cells) {
+  const normalizedCells = cells.map((value) => cleanText(value)).filter(Boolean);
+  if (normalizedCells.length < 2) return null;
+
+  const dateCell = normalizedCells.find((value) => DATE_REGEX.test(value));
+  if (!dateCell) return null;
+
+  const location = normalizedCells[1] || '';
+  const status = normalizedCells.slice(2).join(' - ') || normalizedCells[1] || '';
+  const parsedDate = parseDateCandidate(dateCell);
+
+  return {
+    date: dateCell,
+    location,
+    status,
+    parsedDate: parsedDate ? parsedDate.toISOString() : null
+  };
+}
+
 function parseHistoryRows($, scope) {
   const rows = [];
 
@@ -52,14 +92,23 @@ function parseHistoryRows($, scope) {
         cells.push(cleanText($(li).text()));
       });
 
-    if (cells.length >= 3 && !cells.every((cell) => cell === '')) {
-      rows.push({
-        date: cells[0],
-        location: cells[1],
-        status: cells.slice(2).join(' - ')
-      });
-    }
+    const event = toEvent(cells);
+    if (event) rows.push(event);
   });
+
+  if (rows.length === 0) {
+    scope.find('table tr').each((_, tr) => {
+      const cells = [];
+      $(tr)
+        .find('th,td')
+        .each((__, cell) => {
+          cells.push(cleanText($(cell).text()));
+        });
+
+      const event = toEvent(cells);
+      if (event) rows.push(event);
+    });
+  }
 
   return rows;
 }
@@ -92,21 +141,33 @@ function parseMainInfo($, scope) {
   });
 }
 
+function sortHistoryNewestFirst(history) {
+  return [...history].sort((a, b) => {
+    if (!a.parsedDate && !b.parsedDate) return 0;
+    if (!a.parsedDate) return 1;
+    if (!b.parsedDate) return -1;
+    return new Date(b.parsedDate).getTime() - new Date(a.parsedDate).getTime();
+  });
+}
+
 function parseTrackingHtml(html) {
   const $ = cheerio.load(html);
   const shipments = [];
 
   $('.div_canta .content .div_con').each((_, container) => {
     const $container = $(container);
+    const pageScope = $container.closest('.content');
+
     const titleText = cleanText($container.find('.div_tb_h .danhao').text());
     const ticketText = cleanText($container.find('.div_tb_h .hd').text());
 
     const details = parseMainInfo($, $container);
-    const history = parseHistoryRows($, $container.parent());
-    const attachments = parseAttachments($, $container.parent());
+    const history = sortHistoryNewestFirst(parseHistoryRows($, pageScope));
+    const attachments = parseAttachments($, pageScope);
 
     const matchTracking = titleText.match(/【([^】]*)】/);
     const trackingInTitle = matchTracking && matchTracking[1] ? matchTracking[1] : null;
+    const latestEvent = history[0] || null;
 
     if (details.length > 0 || trackingInTitle || history.length > 0) {
       shipments.push({
@@ -118,6 +179,7 @@ function parseTrackingHtml(html) {
         trackingInTitle,
         details,
         history,
+        latestEvent,
         attachments
       });
     }

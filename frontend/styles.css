@@ -115,6 +115,25 @@ body {
   padding: 1.4rem;
 }
 
+.shipment-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: .75rem;
+  margin-bottom: .85rem;
+}
+
+.latest-pill {
+  background: #e9f8ef;
+  color: #0a7a38;
+  border: 1px solid #c4ebd2;
+  border-radius: 999px;
+  padding: .35rem .65rem;
+  font-size: .78rem;
+  line-height: 1.2;
+  max-width: min(500px, 100%);
+}
+
 .kv-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -130,10 +149,18 @@ body {
 .kv .label { color: var(--muted); font-size: .84rem; }
 .kv .value { margin-top: .25rem; font-weight: 600; word-break: break-word; }
 
-.section-title { margin: 0 0 .8rem; font-size: 1.1rem; }
+.section-title { margin: 0 0 .4rem; font-size: 1.1rem; }
+
+.history-title {
+  margin: 1rem 0 .65rem;
+  font-size: .9rem;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
 
 .timeline {
-  margin-top: 1rem;
+  margin-top: .3rem;
   border-left: 2px solid var(--line);
   padding-left: 1rem;
   display: grid;
@@ -146,6 +173,11 @@ body {
   border-radius: 12px;
   border: 1px solid var(--line);
   padding: .7rem .8rem;
+}
+
+.timeline-item-latest {
+  background: #eff6ff;
+  border-color: #bfdbfe;
 }
 
 .timeline-item::before {
@@ -219,5 +251,7 @@ body {
   .hero { padding: 1.2rem; }
   .search-row { flex-direction: column; }
   .search-row button { width: 100%; }
+  .shipment-head { flex-direction: column; }
+  .latest-pill { width: 100%; }
   .kv-grid { grid-template-columns: 1fr; }
 }

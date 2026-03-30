@@ -27,11 +27,19 @@ function renderLoader() {
   `;
 }
 
+function formatEventHeadline(event) {
+  if (!event) return 'Dernière mise à jour indisponible';
+  const when = event.date || 'Date inconnue';
+  const status = event.status || 'Mise à jour non détaillée';
+  return `${when} — ${status}`;
+}
+
 function renderShipments(shipments = []) {
   results.innerHTML = '';
 
   shipments.forEach((shipment) => {
     const details = shipment.details?.[0] || {};
+    const latestEvent = shipment.latestEvent || shipment.history?.[0] || null;
 
     const detailsHtml = Object.entries(details)
       .map(([key, value]) => `
@@ -43,9 +51,9 @@ function renderShipments(shipments = []) {
       .join('');
 
     const historyHtml = (shipment.history || [])
-      .map((step) => `
-        <article class="timeline-item">
-          <p class="meta">${step.date || 'Date inconnue'} · ${step.location || 'Lieu inconnu'}</p>
+      .map((step, index) => `
+        <article class="timeline-item ${index === 0 ? 'timeline-item-latest' : ''}">
+          <p class="meta">${step.date || 'Date inconnue'}${step.location ? ` · ${step.location}` : ''}</p>
           <strong>${step.status || 'Mise à jour non détaillée'}</strong>
         </article>
       `)
@@ -58,12 +66,20 @@ function renderShipments(shipments = []) {
     const card = document.createElement('article');
     card.className = 'card shipment-card';
     card.innerHTML = `
-      <h2 class="section-title">${shipment.sectionTitleFr || 'Informations d’expédition'}</h2>
-      <p class="meta">${shipment.ticket || ''}</p>
+      <div class="shipment-head">
+        <div>
+          <h2 class="section-title">${shipment.sectionTitleFr || 'Informations d’expédition'}</h2>
+          <p class="meta">${shipment.ticket || ''}</p>
+        </div>
+        <span class="latest-pill">${formatEventHeadline(latestEvent)}</span>
+      </div>
 
       <div class="kv-grid">${detailsHtml || '<p class="meta">Aucun détail exploitable trouvé.</p>'}</div>
 
-      ${(shipment.history || []).length > 0 ? `<div class="timeline">${historyHtml}</div>` : '<p class="meta">Historique non disponible.</p>'}
+      <h3 class="history-title">Historique du colis</h3>
+      ${(shipment.history || []).length > 0
+        ? `<div class="timeline">${historyHtml}</div>`
+        : '<p class="meta">Aucun historique disponible pour ce colis.</p>'}
 
       ${attachmentHtml ? `<div class="attachments">${attachmentHtml}</div>` : ''}
     `;
